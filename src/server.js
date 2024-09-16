@@ -10,13 +10,20 @@ app.use("/public", express.static(__dirname + "/public"));
 
 app.get("/", (req, res) => res.render("home"));
 app.get("/*", (req, res) => res.redirect("home"));
-const handleListen = () => console.log("Listening on http://127.0.0.1:3000/");
+const handleListen = () => console.log("Listening on http://127.0.0.1:3000");
 
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server })
 // starting http, webSocket in the same server 
 // access to http server , create webSocket server on top of http server
 // localhost:3000 can handle http & web request on the same port 
+
+function handleConnection(socket) {
+    console.log(socket)
+    // socket represents the browser that just connected
+}
+
+wss.on("connection", handleConnection)
 
 server.listen(3000, handleListen);
 
