@@ -129,6 +129,13 @@ function handleCameraClick(){
 
 async function handleCameraChange(){
     await getMedia(camerasSelect.value);
+    if(myPeerConnection){
+        const videoTrack = myStream.getVideoTracks()[0]; // myStream
+        const videoSender = myPeerConnection // being sent to other browser
+        .getSenders()
+        .find(sender => sender.track.kind === "video");
+        videoSender.replaceTrack(videoTrack);
+    }
 }
 
 muteBtn.addEventListener("click", handleMuteClick);
