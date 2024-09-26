@@ -56,6 +56,7 @@ let myStream;
 let muted = false;
 let cameraOff = false;
 let roomName;
+let myDataChannel;
 
 /**@type{RTCPeerConnection}*/
 let myPeerConnection;
@@ -169,6 +170,10 @@ welcomeForm.addEventListener("submit", handleWelcomeSubmit)
 // Socket Code
 // Peer A
 socket.on("welcome", async () => {
+    myDataChannel = myPeerConnection.createDataChannel("chat");
+    myDataChannel.addEventListener("message", (event) => 
+        console.log(event.data));
+    console.log("made data channel");
     const offer = await myPeerConnection.createOffer();
     myPeerConnection.setLocalDescription(offer);
     console.log("sent the offer");
@@ -177,6 +182,11 @@ socket.on("welcome", async () => {
 
 // Peer B
 socket.on("offer", async (offer) => {
+    myPeerConnection.addEventListener("datachannel", (event)=>{
+        myDataChannel = event.channel;
+        myDataChannel.addEventListener("message", (event) =>
+            console.log(event.data));
+    });
     console.log("received the offer");
     myPeerConnection.setRemoteDescription(offer);
     const answer = await myPeerConnection.createAnswer();
@@ -220,7 +230,7 @@ function handleIce(data){
 }
 
 function handleAddStream(data){
-    const peerFace = document.getElementById("peersStream");
+    const peerFace = document.getElementById("peerFace");
     console.log("got an stream from my peer");
     peerFace.srcObject = data.stream;
 }
